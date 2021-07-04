@@ -1,0 +1,49 @@
+---
+- name: play
+  hosts: app
+  become: yes
+  tasks:
+    - name: install Nginx
+      apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+        
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Enable new web sites 
+      copy: 
+        src: files/tutorial
+        dest: /etc/nginx/sites-enabled/tutorial
+      notify: Restart Nginx 
+
+    - name: Switch default port to 81
+      copy:
+        src: files/default
+        dest: /etc/nginx/sites-enabled/default
+      notify: Restart Nginx
+
+    - name: Create directories tutorial
+      file:
+        path: /var/www/tutorial
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy new sites to document root
+      copy:
+        src: files/index.html
+        dest: /var/www/tutorial/index.html
+      notify: Restart Nginx
+        
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        
