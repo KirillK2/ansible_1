@@ -40,10 +40,4 @@
         src: files/index.html
         dest: /var/www/tutorial/index.html
       notify: Restart Nginx
-        
-  handlers:
-    - name: Restart Nginx
-      service:
-        name: nginx
-        state: restarted
-        
+              
